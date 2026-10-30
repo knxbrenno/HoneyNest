@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HoneyNest</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="/static/style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" defer></script>
+<script src="/static/app.js" defer></script>
+</head>
+<body>
+<header>
+  <div class="brand"><span class="logo">🍯</span> HoneyNest</div>
+  <div class="status"><span class="dot"></span> <span id="updated">carregando...</span></div>
+</header>
+
+<main>
+  <section class="kpis">
+    <div class="kpi"><span class="label">Eventos</span><span class="value" id="k-events">-</span></div>
+    <div class="kpi"><span class="label">IPs únicos</span><span class="value" id="k-ips">-</span></div>
+    <div class="kpi"><span class="label">Tentativas de login</span><span class="value" id="k-logins">-</span></div>
+    <div class="kpi"><span class="label">Logins aceitos</span><span class="value" id="k-success">-</span></div>
+    <div class="kpi"><span class="label">Comandos</span><span class="value" id="k-commands">-</span></div>
+    <div class="kpi"><span class="label">Downloads</span><span class="value" id="k-downloads">-</span></div>
+    <div class="kpi"><span class="label">Requisições HTTP</span><span class="value" id="k-http">-</span></div>
+    <div class="kpi"><span class="label">Últimas 24h</span><span class="value" id="k-24h">-</span></div>
+  </section>
+
+  <section class="grid two">
+    <div class="card">
+      <h2>Atividade nas últimas 24h</h2>
+      <div class="chart"><canvas id="timeline"></canvas></div>
+    </div>
+    <div class="card">
+      <h2>Origem dos ataques</h2>
+      <div id="map"></div>
+    </div>
+  </section>
+
+  <section class="grid three">
+    <div class="card"><h2>Credenciais mais testadas</h2><table id="t-credentials"></table></div>
+    <div class="card"><h2>Usuários</h2><table id="t-usernames"></table></div>
+    <div class="card"><h2>Senhas</h2><table id="t-passwords"></table></div>
+    <div class="card"><h2>Comandos</h2><table id="t-commands" class="mono"></table></div>
+    <div class="card"><h2>IPs mais ativos</h2><table id="t-ips" class="mono"></table></div>
+    <div class="card"><h2>Países</h2><table id="t-countries"></table></div>
+    <div class="card"><h2>Ataques HTTP</h2><table id="t-http"></table></div>
+    <div class="card"><h2>Serviços (IPs únicos)</h2><table id="t-services"></table></div>
+    <div class="card"><h2>URLs de download</h2><table id="t-downloads" class="mono"></table></div>
+  </section>
+
+  <section class="card">
+    <div class="events-head">
+      <h2>Eventos recentes</h2>
+      <div class="filters">
+        <select id="f-service">
+          <option value="">Todos os serviços</option>
+          <option value="ssh">SSH</option>
+          <option value="telnet">Telnet</option>
+          <option value="http">HTTP</option>
+          <option value="ftp">FTP</option>
+        </select>
+        <select id="f-event">
+          <option value="">Todos os eventos</option>
+          <option value="login_failed">Login falhou</option>
+          <option value="login_success">Login aceito</option>
+          <option value="command">Comando</option>
+          <option value="download">Download</option>
+          <option value="bait_accessed">Arquivo isca</option>
+          <option value="http_request">Requisição HTTP</option>
+          <option value="connect">Conexão</option>
+        </select>
+      </div>
+    </div>
+    <div class="table-scroll">
+      <table id="t-events" class="events">
+        <thead><tr><th>Horário</th><th>Serviço</th><th>Evento</th><th>IP</th><th>País</th><th>Usuário</th><th>Senha</th><th>Detalhe</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+</body>
+</html>

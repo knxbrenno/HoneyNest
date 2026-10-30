@@ -1,0 +1,17 @@
+services:
+  honeynest:
+    build: .
+    container_name: honeynest
+    restart: unless-stopped
+    ports:
+      - "22:2222"     # Mova o seu SSH real para outra porta antes (veja o README)
+      - "23:2323"
+      - "80:8080"
+      - "21:2121"
+      - "127.0.0.1:5000:5000"   # Painel acessível apenas localmente
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro
+      - ./data:/app/data
+      - ./logs:/app/logs
+    environment:
+      - PYTHONUNBUFFERED=1

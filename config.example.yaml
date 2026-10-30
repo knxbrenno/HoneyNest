@@ -1,0 +1,68 @@
+# Copie para config.yaml e ajuste:  cp config.example.yaml config.yaml
+
+# Nome exibido no prompt do shell falso (ex.: root@srv-web-01:~#)
+hostname: srv-web-01
+
+database: data/honeynest.db
+log_file: logs/honeynest.jsonl
+
+# Segundos sem atividade até a sessão ser encerrada
+idle_timeout: 300
+
+services:
+  ssh:
+    enabled: true
+    host: 0.0.0.0
+    port: 2222
+    version: OpenSSH_8.9p1 Ubuntu-3ubuntu0.10
+    host_key_dir: data/keys
+  telnet:
+    enabled: true
+    host: 0.0.0.0
+    port: 2323
+  http:
+    enabled: true
+    host: 0.0.0.0
+    port: 8080
+    server_header: Apache/2.4.52 (Ubuntu)
+  ftp:
+    enabled: true
+    host: 0.0.0.0
+    port: 2121
+    banner: (vsFTPd 3.0.5)
+
+auth:
+  # Credenciais que sempre "funcionam"
+  accept_credentials:
+    - root:root
+    - root:123456
+    - admin:admin
+    - ubuntu:ubuntu
+    - pi:raspberry
+  # Após N tentativas erradas do mesmo IP, a próxima é aceita (0 desativa)
+  accept_after_attempts: 4
+
+downloads:
+  # Baixa os arquivos que os atacantes tentam obter com wget/curl.
+  # Eles NUNCA são executados, mas são malwares reais: o antivírus pode removê-los.
+  enabled: false
+  dir: data/downloads
+  max_size_mb: 10
+
+dashboard:
+  enabled: true
+  # Mantenha 127.0.0.1 e acesse por túnel SSH: ssh -L 5000:127.0.0.1:5000 usuario@servidor
+  host: 127.0.0.1
+  port: 5000
+  username: admin
+  password: troque-esta-senha
+
+geoip:
+  enabled: true
+
+telegram:
+  enabled: false
+  token: ""        # Token do bot (fale com o @BotFather)
+  chat_id: ""      # Seu chat ID (fale com o @userinfobot)
+  events: [login_success, download, bait_accessed]
+  cooldown: 300    # Segundos entre alertas do mesmo IP e tipo de evento

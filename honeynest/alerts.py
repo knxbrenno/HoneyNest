@@ -8,12 +8,12 @@ import aiohttp
 log = logging.getLogger("honeynest.alerts")
 
 EVENT_TITLES = {
-    "login_success": "🔓 Login aceito",
-    "download": "📥 Tentativa de download",
-    "bait_accessed": "🪤 Arquivo isca acessado",
-    "command": "⌨️ Comando executado",
-    "login_failed": "🔑 Tentativa de login",
-    "http_request": "🌐 Requisição HTTP",
+    "login_success": "Login aceito",
+    "download": "Tentativa de download",
+    "bait_accessed": "Arquivo isca acessado",
+    "command": "Comando executado",
+    "login_failed": "Tentativa de login",
+    "http_request": "Requisição HTTP",
 }
 
 

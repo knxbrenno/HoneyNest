@@ -4,6 +4,9 @@
 
 Honeypot multi-serviço escrito em Python (asyncio) que simula um servidor Ubuntu vulnerável para **atrair, registrar e analisar ataques reais** vindos da internet. Todas as interações (tentativas de login, comandos digitados, malwares baixados, varreduras web) são gravadas e exibidas em um **painel web em tempo real**, com mapa de origem dos ataques e alertas no Telegram.
 
+![Painel do HoneyNest](docs/dashboard.png)
+<sub>Painel com dados de demonstração (os IPs pertencem a faixas reservadas para documentação).</sub>
+
 ## Funcionalidades
 
 ### Serviços falsos
@@ -15,6 +18,8 @@ Honeypot multi-serviço escrito em Python (asyncio) que simula um servidor Ubunt
 | **FTP** | 2121 | Credenciais e comandos |
 
 ### Shell falso
+
+![Sessão no shell falso](docs/shell.png)
 - Imita um Ubuntu 22.04: `ls`, `cd`, `cat`, `uname`, `id`, `ps`, `free`, `df`, `ifconfig`, `netstat`, `history` e mais 30 comandos
 - Sistema de arquivos fictício, com suporte a redirecionamento (`echo x > arquivo`), encadeamento (`;`, `&&`, `||`), `sudo` e `bash -c`
 - **Arquivos isca** (`.env`, `.aws/credentials`, `id_rsa`, dump SQL): qualquer leitura gera o evento `bait_accessed`

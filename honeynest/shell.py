@@ -167,12 +167,15 @@ class FakeShell:
     # ------------------------------------------------------------------ execução
 
     def _run_segment(self, segment):
-        # Redirecionamento: "echo x > arquivo" grava no sistema de arquivos falso.
+        # Redirecionamentos: "echo x > arquivo" grava no sistema de arquivos falso;
+        # "2>/dev/null" e "2>&1" são só removidos.
+        segment = re.sub(r"\s*\d?>&\d?", "", segment)
         redirect = None
-        match = re.search(r"\s*(>>?)\s*(\S+)\s*$", segment)
-        if match:
-            redirect = (match.group(1), match.group(2))
-            segment = segment[:match.start()]
+        for match in re.finditer(r"\s*(\d?)(>>?)\s*([^\s>]+)", segment):
+            if match.group(1) in ("", "1"):
+                redirect = (match.group(2), match.group(3))
+        segment = re.sub(r"\s*\d?>>?\s*[^\s>]+", "", segment)
+        segment = re.sub(r"\s*<\s*\S+", "", segment)
 
         # Pipes: só o primeiro comando produz saída (suficiente para enganar scripts automatizados).
         first = segment.split("|")[0].strip()
@@ -185,7 +188,7 @@ class FakeShell:
 
         if redirect:
             mode, target = redirect
-            if target not in ("/dev/null", "&1", "&2"):
+            if target != "/dev/null":
                 path = self._resolve(target)
                 self.files[path] = (self.files.get(path, "") if mode == ">>" else "") + output
             return ""

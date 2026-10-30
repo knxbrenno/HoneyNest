@@ -91,8 +91,9 @@ def build_app(honeypot, cfg):
     rec = honeypot.recorder
 
     async def handler(request):
-        ip = request.remote
-        port = request.transport.get_extra_info("peername")[1] if request.transport else None
+        ip = request.remote or "desconhecido"
+        peer = request.transport.get_extra_info("peername") if request.transport else None
+        port = peer[1] if peer else None
         body = (await request.content.read(MAX_BODY)).decode("utf-8", errors="replace") if request.can_read_body else ""
         ua = request.headers.get("User-Agent", "")
         tags, tool = classify(request.path_qs + " " + body, ua)

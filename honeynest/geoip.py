@@ -31,7 +31,10 @@ async def update_once(db, http):
 
     if public:
         async with http.post(API_URL, json=public) as resp:
-            for item in await resp.json():
+            if resp.status != 200:  # Ex.: 429 quando o limite de requisições é atingido
+                log.warning("ip-api.com respondeu HTTP %s; nova tentativa no próximo ciclo.", resp.status)
+                public = []
+            for item in (await resp.json() if public else []):
                 ok = item.get("status") == "success"
                 rows.append({"ip": item["query"], "country": item.get("country") if ok else "Desconhecido",
                              "country_code": item.get("countryCode"), "city": item.get("city"),

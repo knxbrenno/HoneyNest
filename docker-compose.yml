@@ -11,7 +11,12 @@ services:
       - "127.0.0.1:5000:5000"   # Painel acessível apenas localmente
     volumes:
       - ./config.yaml:/app/config.yaml:ro
-      - ./data:/app/data
-      - ./logs:/app/logs
+      # Volumes nomeados herdam as permissões do container (o processo não roda como root).
+      - honeynest-data:/app/data
+      - honeynest-logs:/app/logs
     environment:
       - PYTHONUNBUFFERED=1
+
+volumes:
+  honeynest-data:
+  honeynest-logs:

@@ -57,3 +57,12 @@ def test_unknown_command_and_exit():
     shell, _ = make_shell()
     assert shell.execute("xyz")[0] == "xyz: command not found\n"
     assert shell.execute("exit")[1] is True
+
+
+def test_stderr_redirects_are_ignored():
+    shell, _ = make_shell()
+    assert shell.execute("cat /etc/hostname 2>/dev/null")[0] == "srv-test\n"
+    assert shell.execute("cat /etc/hostname > /dev/null 2>&1")[0] == ""
+    assert shell.execute("uname -s 2>&1")[0] == "Linux\n"
+    assert shell.execute("echo a>/tmp/b; cat /tmp/b")[0] == "a\n"
+    assert shell.execute("echo c >> /tmp/b; cat /tmp/b")[0] == "a\nc\n"

@@ -21,7 +21,7 @@ def _basic_auth_middleware(username, password):
         response.headers["Content-Security-Policy"] = (
             "default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com; "
             "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; "
-            "img-src 'self' data: https://*.basemaps.cartocdn.com https://cdnjs.cloudflare.com")
+            "img-src 'self' data: https://tile.openstreetmap.org https://cdnjs.cloudflare.com")
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-Frame-Options"] = "DENY"
         return response
@@ -39,7 +39,7 @@ def build_app(db, cfg):
     async def events(request):
         q = request.query
         try:
-            limit = min(int(q.get("limit", 100)), MAX_EVENTS)
+            limit = max(1, min(int(q.get("limit", 100)), MAX_EVENTS))
         except ValueError:
             limit = 100
         rows = db.recent_events(limit, service=q.get("service"), event=q.get("event"), ip=q.get("ip"))

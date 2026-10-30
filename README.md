@@ -1,5 +1,7 @@
 # 🍯 HoneyNest
 
+[![Testes](https://github.com/knxbrenno/HoneyNest/actions/workflows/tests.yml/badge.svg)](https://github.com/knxbrenno/HoneyNest/actions/workflows/tests.yml)
+
 Honeypot multi-serviço escrito em Python (asyncio) que simula um servidor Ubuntu vulnerável para **atrair, registrar e analisar ataques reais** vindos da internet. Todas as interações (tentativas de login, comandos digitados, malwares baixados, varreduras web) são gravadas e exibidas em um **painel web em tempo real**, com mapa de origem dos ataques e alertas no Telegram.
 
 ## Funcionalidades
@@ -132,7 +134,7 @@ python3 -m pytest
 
 ## Consultas úteis
 
-Os eventos ficam em `data/honeynest.db` (SQLite) e em `logs/honeynest.jsonl`:
+Os eventos ficam em `data/honeynest.db` (SQLite) e em `logs/honeynest.jsonl`. Com Docker, eles ficam nos volumes `honeynest-data` e `honeynest-logs`; para copiar o banco: `docker cp honeynest:/app/data/honeynest.db .`
 
 ```bash
 # Senhas mais testadas

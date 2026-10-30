@@ -1,5 +1,11 @@
 // Painel do HoneyNest. Todos os dados vêm de atacantes: só usamos textContent, nunca innerHTML.
 const REFRESH_MS = 10000;
+
+// URLs absolutas sem usuário/senha: o fetch falha se a página foi aberta como http://usuario:senha@host.
+const api = path => fetch(new URL(path, location.origin), { credentials: "same-origin" }).then(r => {
+  if (!r.ok) throw new Error("HTTP " + r.status);
+  return r.json();
+});
 let timelineChart = null;
 let map = null;
 let markers = null;
@@ -78,8 +84,8 @@ function drawTimeline(rows) {
 function drawMap(points) {
   if (!map) {
     map = L.map("map", { worldCopyJump: true, attributionControl: true }).setView([20, 0], 1);
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-      attribution: "&copy; OpenStreetMap &copy; CARTO", maxZoom: 10,
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "&copy; OpenStreetMap", maxZoom: 10, className: "dark-tiles",
     }).addTo(map);
     markers = L.layerGroup().addTo(map);
   }
@@ -99,7 +105,7 @@ function drawMap(points) {
 }
 
 async function loadStats() {
-  const s = await (await fetch("/api/stats")).json();
+  const s = await api("/api/stats");
   setKpis(s.totals);
   drawTimeline(s.timeline);
   fillRanking("t-credentials", s.top_credentials);
@@ -114,7 +120,7 @@ async function loadStats() {
 }
 
 async function loadMap() {
-  drawMap(await (await fetch("/api/map")).json());
+  drawMap(await api("/api/map"));
 }
 
 async function loadEvents() {
@@ -124,7 +130,7 @@ async function loadEvents() {
   if (service) params.set("service", service);
   if (event) params.set("event", event);
 
-  const rows = await (await fetch("/api/events?" + params)).json();
+  const rows = await api("/api/events?" + params);
   const tbody = document.querySelector("#t-events tbody");
   tbody.replaceChildren();
   for (const r of rows) {

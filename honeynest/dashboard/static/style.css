@@ -77,3 +77,6 @@ select { background: var(--bg); color: var(--text); border: 1px solid var(--bord
 .badge.command { background: rgba(88, 166, 255, .15); color: var(--info); }
 
 .leaflet-container { font: inherit; }
+
+/* Mapas do OpenStreetMap são claros; o filtro os deixa no tema escuro do painel. */
+.dark-tiles { filter: invert(1) hue-rotate(180deg) brightness(.85) contrast(.9); }
